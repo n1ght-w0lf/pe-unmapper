@@ -85,7 +85,11 @@ def sections_virtual_to_raw(pe: pefile.PE, file_buf: bytearray):
 def pe_virtual_to_raw(pe: pefile.PE, new_base: int, file_buf: bytearray):
     out = sections_virtual_to_raw(pe, file_buf)
     unmapped_pe = pefile.PE(data=out)
+
     unmapped_pe.OPTIONAL_HEADER.ImageBase = new_base
+    for section in unmapped_pe.sections:
+        section.Misc_VirtualSize = section.SizeOfRawData
+
     return unmapped_pe
 
 # Check if the memdump comes from triage
